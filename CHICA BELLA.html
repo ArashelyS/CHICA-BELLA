@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Citas - Chica Bella</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fce4ec;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #d81b60;
+        }
+        form {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            text-align: left;
+            width: 300px;
+        }
+        input, select, button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #d81b60;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #c2185b;
+        }
+        #mensaje {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Registro de Citas - Chica Bella</h1>
+    <form id="formulario">
+        <label for="fecha">Fecha</label>
+        <input type="date" id="fecha" required>
+
+        <label for="hora">Hora</label>
+        <input type="time" id="hora" required>
+
+        <label for="nombre">Nombre del cliente</label>
+        <input type="text" id="nombre" placeholder="Ejemplo: María Pérez" required>
+
+        <label for="servicio">Servicio</label>
+        <input type="text" id="servicio" placeholder="Ejemplo: Corte y Peinado" required>
+
+        <label for="estado">Estado</label>
+        <select id="estado">
+            <option value="Pendiente">Pendiente</option>
+            <option value="Confirmada">Confirmada</option>
+            <option value="Cancelada">Cancelada</option>
+        </select>
+
+        <button type="submit" id="boton">Registrar Cita</button>
+    </form>
+
+    <p id="mensaje"></p>
+
+    <script>
+        document.getElementById("formulario").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const boton = document.getElementById("boton");
+            const mensaje = document.getElementById("mensaje");
+
+            const datos = {
+                fecha: document.getElementById("fecha").value,
+                hora: document.getElementById("hora").value,
+                nombre: document.getElementById("nombre").value.trim(),
+                servicio: document.getElementById("servicio").value.trim(),
+                estado: document.getElementById("estado").value
+            };
+
+            // Validación básica
+            if (!datos.nombre || !datos.servicio) {
+                mensaje.textContent = "Por favor completa todos los campos correctamente.";
+                mensaje.style.color = "red";
+                return;
+            }
+
+            // Indicador de envío
+            boton.disabled = true;
+            boton.textContent = "Enviando...";
+            mensaje.textContent = "";
+
+            fetch("https://script.google.com/macros/s/AKfycbwZs7F9xJ4rD_MeiKaWfR8lkFkTybA5hM2uGqbIuiHAi2_gl7rTCvC72qWQ6b8AQDDbMg/exec", {
+                method: "POST",
+                body: JSON.stringify(datos),
+                headers: { "Content-Type": "application/json" }
+            })
+            .then(response => response.text())
+            .then(respuesta => {
+                mensaje.textContent = respuesta;
+                mensaje.style.color = "green";
+                boton.disabled = false;
+                boton.textContent = "Registrar Cita";
+                document.getElementById("formulario").reset();
+            })
+            .catch(error => {
+                mensaje.textContent = "Error al registrar la cita: " + error;
+                mensaje.style.color = "red";
+                boton.disabled = false;
+                boton.textContent = "Registrar Cita";
+            });
+        });
+    </script>
+
+</body>
+</html>
